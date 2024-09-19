@@ -1,0 +1,85 @@
+{
+    "Senin": [
+      {
+        "Matkul": "Matematika Terapan 1",
+        "Dosen": "ISD",
+        "No_ruangan": "128",
+        "Jam": "07:00-09:00",
+        "SKS": 2
+      },
+      {
+        "Matkul": "Instrumentasi Dan Pengukuran Listrik",
+        "Dosen": "YPP",
+        "No_ruangan": "210",
+        "Jam": "09:00-12:00",
+        "SKS": 3
+      }
+    ],
+    "Selasa": [
+      {
+        "Matkul": "Agama",
+        "Dosen": "EDI",
+        "No_ruangan": "120",
+        "Jam": "13:00-15:00",
+        "SKS": 2
+      },
+      {
+        "Matkul": "Fisika Terapan",
+        "Dosen": "MYE",
+        "No_ruangan": "130",
+        "Jam": "15:00-17:00",
+        "SKS": 2
+      }
+    ],
+    "Rabu": [
+      {
+        "Matkul": "Praktikum Instrumentasi",
+        "Dosen": "TNR/FHG",
+        "No_ruangan": "230",
+        "Jam": "07:00-10:00",
+        "SKS": 3
+      },
+      {
+        "Matkul": "Rangkaian Listrik",
+        "Dosen": "RTW",
+        "No_ruangan": "304",
+        "Jam": "13:00-16:00",
+        "SKS": 3
+      }
+    ],
+    "Kamis": [
+      {
+        "Matkul": "Bahasa Indonesia",
+        "Dosen": "AFL",
+        "No_ruangan": "130",
+        "Jam": "07:00-09:00",
+        "SKS": 2
+      },
+      {
+        "Matkul": "Gambar Teknik Elektronika",
+        "Dosen": "ELS/USA",
+        "No_ruangan": "218",
+        "Jam": "10:00-13:00",
+        "SKS": 3
+      }
+    ],
+    "Jumat": [
+      {
+        "Matkul": "Bahasa Inggris 1",
+        "Dosen": "MAY",
+        "No_ruangan": "129",
+        "Jam": "09:00-11:00",
+        "SKS": 2
+      }
+    ],
+    "Sabtu": [
+      {
+        "Matkul": "K3 dan etika lingkungan",
+        "Dosen": "DI K3",
+        "No_ruangan": "127",
+        "Jam": "09:00-11:00",
+        "SKS": 2
+      }
+    ]
+  }
+  
