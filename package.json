@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node ./build/main.js"
+    "dev": "node ./build/main.js",
+    "db" : "sqlite3 ./database/dev.sqlite3"
   },
   "keywords": [],
   "author": "",

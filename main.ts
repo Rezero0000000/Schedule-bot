@@ -1,6 +1,7 @@
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import { db } from "./database/db";
+import { Services } from "./services/services";
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth");
 
@@ -39,79 +40,98 @@ async function connectToWhatsApp() {
         console.log(msg.message?.conversation)
         const jid = msg.key.remoteJid;
         const message = msg.message?.conversation?.toLowerCase();
+        const user = await db("users").where("jid", jid).first();
         
         if (!message) return;
-        while (true) {
+        
+        // Register
+        if (!user.isLogin) {
+         
+          // Authentication
             if (!registrationState[jid]) {
-                if (message === "daftar") {
-                    registrationState[jid] = true;
-                    await sock.sendMessage(jid, { text: "Welcome! Please input your details in the following format:\nname: [your name]\nprodi: [your program]\nnim: [your NIM]\npassword: [your password]" });
-                }
-                break;
+              if (message === "daftar") {
+                registrationState[jid] = true;
+                await sock.sendMessage(jid, { text: "Welcome! Please input your details in the following format:\nname: [your name]\nprodi: [your program]\nnim: [your NIM]\npassword: [your password]" });
+              } else if (!user.isLogin && message !== "/login") {
+                await sock.sendMessage(jid, { text: "Please register first." });
+              }
+            } else {
+              const registrationPattern = /^name:\s*[a-zA-Z\s]+\s*\nprodi:\s*[a-zA-Z\s]+\s*\nnim:\s*\d+\s*\npassword:\s*\S+$/i;
+              
+              if (registrationPattern.test(message)) {
+                const [name, prodi, nim, password] = message.split('\n').map(item => item.split(':')[1].trim());
+    
+                const user = {
+                  name,
+                  prodi,
+                  nim,
+                  jid,
+                  password,
+                  isLogin: false
+                };
+    
+                await db('users').insert(user);
+                await sock.sendMessage(jid, { text: `Thank you, ${name}! Your registration details:\nNIM: ${nim}\nProdi: ${prodi}\nYou are now registered.` });
+                registrationState[jid] = false; 
+              } else {
+              
+                await sock.sendMessage(jid, { text: "Invalid format. Please enter your details in the correct format:\nname: [your name]\nprodi: [your program]\nnim: [your NIM]\npassword: [your password]" });
+              }
             } 
-            else {
-                const registrationPattern = /^name:\s*[a-zA-Z\s]+\s*\nprodi:\s*[a-zA-Z\s]+\s*\nnim:\s*\d+\s*\npassword:\s*\S+$/i;
-                if (registrationPattern.test(message)) {
-                    const [name, prodi, nim, password] = message.split('\n').map(item => item.split(':')[1].trim());
-                    
-                    const user = {
-                        name,
-                        prodi,
-                        nim,
-                        password,
-                        isLogin: false
-                    }
-
-                    await db('users').insert(user);
-                    
-                    console.log(user);
-                    await sock.sendMessage(jid, { text: `Thank you, ${name}! Your registration details:\nNIM: ${nim}\nProdi: ${prodi}\nYou are now registered.` });
-                    registrationState[jid] = false;
-                } else {
-                    await sock.sendMessage(jid, { text: "Invalid format. Please enter your details in the correct format:\nname: [your name]\nprodi: [your program]\nnim: [your NIM]\npassword: [your password]" });
-                }
-                break;
+            // Login
+            if (message.startsWith("/login")) {
+              const parts = message.split(" ");
+              if (parts.length === 2) {
+                const password = parts[1];
+              } else {
+                await sock.sendMessage(jid, { text: "Invalid format. Please use: /login [password]" });
+              }
             }
-        }
-
-      
-        if (message == "/jadwal") {
-          const data = await db("schedule").select("*");
-          console.log(data)
-
-          let scheduleString = "";
-          const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-          
-          for (const day of days) {
-            console.log(day)
-            const daySchedule = data.filter(item => item.hari === day);
-            
-            if (daySchedule.length > 0) {
-              scheduleString += `*${day}*\n\n`;
               
-              daySchedule.forEach((course, index) => {
-                scheduleString += `- **Matkul ${index + 1}:** ${course.mata_kuliah}\n`;
-                scheduleString += `  - Dosen: ${course.dosen}\n`;
-                scheduleString += `  - No Ruangan: ${course.no_ruangan}\n`;
-                scheduleString += `  - Jam: ${course.jam_mulai} - ${course.jam_selesai}\n`;
-                scheduleString += `  - SKS: ${course.sks} SKS\n\n`;
-              });
-              
-              scheduleString += "\n";
+        } else {
+          if (message == "/jadwal") {
+              const scheduleString = await Services.getSchedule();
+              await sock.sendMessage(jid, { text: scheduleString });
             }
           }
-          await sock.sendMessage(jid, { text: scheduleString });
         }
-    }
   });
 }
-
 connectToWhatsApp();
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Location
-
-
       //   if (msg.message && msg.message.locationMessage) {
       //     const location = msg.message.locationMessage
           

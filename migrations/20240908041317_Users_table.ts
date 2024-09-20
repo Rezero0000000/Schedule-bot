@@ -9,6 +9,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string('prodi').notNullable();
         table.string('nim').notNullable().unique();
         table.string('password').notNullable();
+        table.string('jid').notNullable();
         table.string('role').notNullable().defaultTo('user');
         table.boolean('isLogin').notNullable();
         table.timestamps(true, true);
