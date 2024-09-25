@@ -1,10 +1,8 @@
 import { Knex } from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
-    // Deletes ALL existing entries
     await knex("schedule").del();
 
-    // Inserts seed entries
     await knex("schedule").insert([
         // Senin
         { hari: 'Senin', mata_kuliah: 'Matematika Terapan 1', dosen: 'ISD', no_ruangan: '128', jam_mulai: '07:00', jam_selesai: '09:00', sks: 2 },
