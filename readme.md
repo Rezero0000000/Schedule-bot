@@ -1,6 +1,6 @@
 ---
 
-# WhatsApp Bot Documentation
+# Schedule.bot
 
 ## 1. **Download from GitHub**
 Follow these steps to download the bot from GitHub:

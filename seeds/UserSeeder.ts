@@ -8,7 +8,7 @@ export async function seed(knex: Knex): Promise<void> {
             name: "atomic",
             prodi: "Teknik Informatika",
             nim: "1234567890",
-            jid: "62877411742w22@s.whatsapp.net",
+            jid: "s@s.whatsapp.net",
             password: "admin",
             role: "admin",
             isLogin: false,

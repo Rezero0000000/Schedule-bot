@@ -1,6 +1,7 @@
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import { db } from "./database/db";
+import bcrypt from "bcrypt";
 import { Services } from "./services/services";
 
 async function connectToWhatsApp() {
@@ -44,17 +45,11 @@ async function connectToWhatsApp() {
         const message = msg.message?.conversation?.toLowerCase();
         const user = await db("users").where("jid", jid).first();
         console.log(`Receive a message: ${message}`);
-        if (!message && !msg.message.locationMessage) return;
-
-
-        if (message == "/status"){
-          Services.checkStatus(user, sock, jid);
-        }
-
+        if (!message && (!msg || !msg.message || !msg.message.locationMessage)) return
         
         if (!user){
+         
           // Register
-
           if (!registrationState[jid]) {
             if (message === "/register") {
               registrationState[jid] = true;
@@ -69,7 +64,9 @@ async function connectToWhatsApp() {
             const registrationPattern = /^name:\s*[a-zA-Z\s]+\s*\nprodi:\s*[a-zA-Z\s]+\s*\nnim:\s*\d+\s*\npassword:\s*\S+$/i;
             if (registrationPattern.test(message)) {
               
-              const [name, prodi, nim, password] = message.split('\n').map(item => item.split(':')[1].trim());
+              let [name, prodi, nim, password] = message.split('\n').map(item => item.split(':')[1].trim());
+              password = await bcrypt.hash(password, 10);
+
               const user = {
                 name,
                 prodi,
@@ -82,8 +79,8 @@ async function connectToWhatsApp() {
               await db('users').insert(user);
               await sock.sendMessage(jid, { text: `Thank you, ${name}! Your registration details:\nNIM: ${nim}\nProdi: ${prodi}\nYou are now registered.` });
               registrationState[jid] = false; 
-              
             } 
+
             else {
               await sock.sendMessage(jid, { text: "Invalid format. Please enter your details in the correct format:\nname: [your name]\nprodi: [your program]\nnim: [your NIM]\npassword: [your password]" });
             }
@@ -91,17 +88,24 @@ async function connectToWhatsApp() {
 
         }
         else if (!user.isLogin) {
-            // Login
+            if (message == "/status"){
+                Services.checkStatus(user, sock, jid);
+                return
+            }
             
+            // Login
             if (message.startsWith("/login")) {
 
               const parts = message.split(" ");
               if (parts.length === 2) {
                 const password = parts[1];
-                if (user.password == password){
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+                
+                if (isPasswordValid){
                   await db("users").where("jid", jid).update({
                     isLogin: true
                   });
+                  await sock.sendMessage(jid, {text: "Login successful!"})
                 }
                 else {
                   await sock.sendMessage(jid, {text: "Wrong password"});
@@ -116,6 +120,11 @@ async function connectToWhatsApp() {
             }
         } 
         else {
+            if (message == "/status"){
+                Services.checkStatus(user, sock, jid);
+                return
+            }
+
             // Schedule
             if (message == "/schedule") {
               const scheduleString = await Services.getSchedule();
@@ -132,7 +141,7 @@ async function connectToWhatsApp() {
               await db("users").where("jid", jid).update({
                 isLogin: false
               });
-              await sock.sendMessage(jid, {text: "Logout Sucessfully"});
+              await sock.sendMessage(jid, {text: "Logout successful!"});
             }
           }
       }

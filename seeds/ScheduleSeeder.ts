@@ -5,25 +5,25 @@ export async function seed(knex: Knex): Promise<void> {
 
     await knex("schedule").insert([
         // Senin
-        { hari: 'Senin', mata_kuliah: 'Matematika Terapan 1', dosen: 'ISD', no_ruangan: '128', jam_mulai: '07:00', jam_selesai: '09:00', sks: 2 },
-        { hari: 'Senin', mata_kuliah: 'Instrumentasi Dan Pengukuran Listrik', dosen: 'YPP', no_ruangan: '210', jam_mulai: '09:00', jam_selesai: '12:00', sks: 3 },
+        { day: 'Senin', course: 'Matematika Terapan 1', lecturer: 'ISD', room_number: '128', start_time: '07:00', end_time: '09:00', credits: 2 },
+        { day: 'Senin', course: 'Instrumentasi Dan Pengukuran Listrik', lecturer: 'YPP', room_number: '210', start_time: '09:00', end_time: '12:00', credits: 3 },
        
         // Selasa
-        { hari: 'Selasa', mata_kuliah: 'Agama', dosen: 'EDI', no_ruangan: '120', jam_mulai: '13:00', jam_selesai: '15:00', sks: 2 },
-        { hari: 'Selasa', mata_kuliah: 'Fisika Terapan', dosen: 'MYE', no_ruangan: '130', jam_mulai: '15:00', jam_selesai: '17:00', sks: 2 },
+        { day: 'Selasa', course: 'Agama', lecturer: 'EDI', room_number: '120', start_time: '13:00', end_time: '15:00', credits: 2 },
+        { day: 'Selasa', course: 'Fisika Terapan', lecturer: 'MYE', room_number: '130', start_time: '15:00', end_time: '17:00', credits: 2 },
        
         // Rabu
-        { hari: 'Rabu', mata_kuliah: 'Praktikum Instrumentasi', dosen: 'TNR/FHG', no_ruangan: '230', jam_mulai: '07:00', jam_selesai: '10:00', sks: 3 },
-        { hari: 'Rabu', mata_kuliah: 'Rangkaian Listrik', dosen: 'RTW', no_ruangan: '304', jam_mulai: '13:00', jam_selesai: '16:00', sks: 3 },
+        { day: 'Rabu', course: 'Praktikum Instrumentasi', lecturer: 'TNR/FHG', room_number: '230', start_time: '07:00', end_time: '10:00', credits: 3 },
+        { day: 'Rabu', course: 'Rangkaian Listrik', lecturer: 'RTW', room_number: '304', start_time: '13:00', end_time: '16:00', credits: 3 },
        
         // Kamis
-        { hari: 'Kamis', mata_kuliah: 'Bahasa Indonesia', dosen: 'AFL', no_ruangan: '130', jam_mulai: '07:00', jam_selesai: '09:00', sks: 2 },
-        { hari: 'Kamis', mata_kuliah: 'Gambar Teknik Elektronika', dosen: 'ELS/USA', no_ruangan: '218', jam_mulai: '10:00', jam_selesai: '13:00', sks: 3 },
+        { day: 'Kamis', course: 'Bahasa Indonesia', lecturer: 'AFL', room_number: '130', start_time: '07:00', end_time: '09:00', credits: 2 },
+        { day: 'Kamis', course: 'Gambar Teknik Elektronika', lecturer: 'ELS/USA', room_number: '218', start_time: '10:00', end_time: '13:00', credits: 3 },
         
         // Jumat
-        { hari: 'Jumat', mata_kuliah: 'Bahasa Inggris 1', dosen: 'MAY', no_ruangan: '129', jam_mulai: '09:00', jam_selesai: '11:00', sks: 2 },
+        { day: 'Jumat', course: 'Bahasa Inggris 1', lecturer: 'MAY', room_number: '129', start_time: '09:00', end_time: '11:00', credits: 2 },
         
         // Sabtu
-        { hari: 'Sabtu', mata_kuliah: 'K3 dan etika lingkungan', dosen: 'DI K3', no_ruangan: '127', jam_mulai: '09:00', jam_selesai: '11:00', sks: 2 }
+        { day: 'Sabtu', course: 'K3 dan etika lingkungan', lecturer: 'DI K3', room_number: '127', start_time: '09:00', end_time: '11:00', credits: 2 }
     ]);
 };

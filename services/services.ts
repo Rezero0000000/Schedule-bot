@@ -33,32 +33,46 @@ export class Services {
         });
         
         if (distance <= referenceLocation.radius) { 
+          const now = new Date();
+          const options = { 
+            timeZone: 'Asia/Jakarta', 
+            hour: '2-digit' as const, 
+            minute: '2-digit' as const, 
+            hour12: false 
+          };
+          const time = now.toLocaleTimeString('id-ID', options);
+          
+          await db("attendances").insert({
+            isAttend: true,
+            day: now.toLocaleDateString('id-ID', { weekday: 'long', timeZone: 'Asia/Jakarta' }), 
+            time: time, 
+            jid: jid
+          });
+          
           await sock.sendMessage(jid, { text: "Attendance successful! You are within the 7-meter radius." });
         } else {
           await sock.sendMessage(jid, { text: `You are outside the radius. Distance: ${distance.toFixed(2)} meters.` });
         }
-      }
+      }        
 
     public static async getSchedule () {
         const data = await db("schedule").select("*");
-          console.log(data)
-
+        console.log(data)
           let scheduleString = "";
           const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
           
           for (const day of days) {
-            console.log(day)
-            const daySchedule = data.filter(item => item.hari === day);
+            const daySchedule = data.filter(item => item.day === day);
             
             if (daySchedule.length > 0) {
               scheduleString += `*${day}*\n\n`;
               
               daySchedule.forEach((course, index) => {
-                scheduleString += `- **Matkul ${index + 1}:** ${course.mata_kuliah}\n`;
-                scheduleString += `  - Dosen: ${course.dosen}\n`;
-                scheduleString += `  - No Ruangan: ${course.no_ruangan}\n`;
-                scheduleString += `  - Jam: ${course.jam_mulai} - ${course.jam_selesai}\n`;
-                scheduleString += `  - SKS: ${course.sks} SKS\n\n`;
+                scheduleString += `- **Matkul ${index + 1}:** ${course.course}\n`;
+                scheduleString += `  - Dosen: ${course.lecturer}\n`;
+                scheduleString += `  - No Ruangan: ${course.room_number}\n`;
+                scheduleString += `  - Jam: ${course.start_time} - ${course.end}\n`;
+                scheduleString += `  - SKS: ${course.credits} SKS\n\n`;
               });
               
               scheduleString += "\n";
@@ -74,14 +88,14 @@ export class Services {
         const today = moment().tz('Asia/Jakarta').format('dddd');
 
         const schedules = await db('schedule')
-          .where('hari', today)
-          .andWhere('jam_mulai', oneHourLater); 
+          .where('day', today)
+          .andWhere('start_time', oneHourLater); 
 
         if (schedules.length > 0) {
           const users = await db('users').where('isLogin', true);
 
           for (let schedule of schedules) {
-            const message = `Pelajaran ${schedule.mata_kuliah} dengan dosen ${schedule.dosen} akan dimulai pada pukul ${schedule.jam_mulai} di ruangan ${schedule.no_ruangan}. Jangan lupa bersiap!`;
+            const message = `Pelajaran ${schedule.course} dengan dosen ${schedule.lecturer} akan dimulai pada pukul ${schedule.start_time} di ruangan ${schedule.room_number}. Jangan lupa bersiap!`;
 
             for (let user of users) {
               const jid = user.jid;
